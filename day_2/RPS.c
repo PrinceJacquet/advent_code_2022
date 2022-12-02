@@ -4,9 +4,14 @@
 #include <stdlib.h>
 
 int calculate_score(char opp ,char me){
-    int tab[5]={0,1,2,3,1};
+    int tab[5]={3,1,2,3,1};
     int me_val = (int)me - 87 ;
     int opp_val = (int)opp - 64;
+
+    if(me_val == 2){me_val = opp_val;}
+    else if(me_val == 1){me_val = tab[opp_val-1];}
+    else { me_val = tab[opp_val+1];}
+
     printf("opp_val = %d && me_val = %d \n",opp_val,me_val);
     if(me_val == opp_val){
     	return (3 + me_val);
