@@ -21,27 +21,43 @@ void cp_string(char * str, char *dst, int val){
     }
 }
 
-void common_items(char * str, char *dst, int *cmm){
+void common_items(char * str, char *dst, char *mid, int *cmm){
     //cmm size 53 and full of zero
     int mem[53] = {0};
 
     for(int i =0;str[i]!='\0';i++){
         if((str[i] >= 'a') && (str[i] <= 'z')){
-            mem[str[i]-'a'+1]++;
+            mem[str[i]-'a'+1]=1;
         }else{
-            mem[str[i]-'A'+27]++;
+            mem[str[i]-'A'+27]=1;
+
         }
     }
 
     for(int i =0;dst[i]!='\0';i++){
         if((dst[i] >= 'a') && (dst[i] <= 'z')){
-            if(mem[dst[i]-'a'+1] ){
-                cmm[dst[i]-'a'+1]++;
+            if(mem[dst[i]-'a'+1] == 1){
+                mem[dst[i]-'a'+1]=2;
+            }
+
+        }else{
+            if(mem[dst[i]-'A'+27]==1){
+                mem[dst[i]-'A'+27]=2;
+            }          
+            
+
+        }
+    }
+
+    for(int i =0;mid[i]!='\0';i++){
+        if((mid[i] >= 'a') && (mid[i] <= 'z')){
+            if(mem[mid[i]-'a'+1] == 2){
+                cmm[mid[i]-'a'+1]=1;
             }
             
         }else{
-            if(mem[dst[i]-'A'+27]){
-                cmm[dst[i]-'A'+27]++;
+            if(mem[mid[i]-'A'+27] ==2){
+                cmm[mid[i]-'A'+27]=1;
             }
         }
     }
@@ -52,7 +68,7 @@ void common_items(char * str, char *dst, int *cmm){
 int calculate_priority(int *p){
     int tot_priority =0;
     for(int i =1; i<53;i++){
-        if(p[i]>0){
+        if(p[i]){
             tot_priority+=i;
             printf("-- found cmm ! at cmm[%d] --",i);
         }
@@ -63,8 +79,8 @@ int calculate_priority(int *p){
 
 int main (){
     
-    int max = 0, cmp =0, cmm[53]={0};
-    char line_rd[100] = {0}, A[100] ={0}, *B;
+    int max = 0, cmp =0, cmm[53]={0}, my_eof = 1;
+    char line_rd[100] = {0}, A[3][100]={0};// , B[100];
     int line_nbr = 50;
     
     FILE *fptr;
@@ -76,20 +92,26 @@ int main (){
     }
     
 
-    while( fgets(line_rd,line_nbr,fptr) != NULL){
-                
-        printf("line_rd = %s",line_rd);
-        cmp = str_len(line_rd)/2;
-        cp_string(line_rd,A,cmp);
-        B=line_rd+cmp;
-        B[cmp]='\0';
-        printf("cmp = %d _\n A = %s && B = %s && line_rd =%s \n\n", cmp,A, B, line_rd);
-        common_items(A,B,cmm);
+    while(my_eof){
         
-        for(int k =0; k<53;k++){ printf(" -> cmm[%d] = %d \n",k,cmm[k]);}
+        int i =0;
+        do{
+            my_eof = fgets(line_rd,line_nbr,fptr) != NULL;
+            if(my_eof <= 0){break;}
+            printf("line_rd = %s ",line_rd);
+            sscanf(line_rd,"%s \n",A[i]);
+            printf("A[%d] = %s \n\n",i,A[i]);
+            i++;
+            
+        }while(i<=2);
+
+        if(my_eof <= 0){break;}
+
+        common_items(A[0],A[1],A[2],cmm);
+        
         max += calculate_priority(cmm);
         printf("total prio = %d\n\n",max);
-        for(int k =0; k<53;k++){ cmm[k]=0;}
+        for(int k =0; k<=52;k++){ cmm[k]=0;}
         printf(" reset cmm[ALL] = 0! \n");
 
     
