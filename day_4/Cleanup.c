@@ -3,23 +3,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int str_len(char * strg){
-    int i =0;
-    while(strg[i]!='\0'){
-        i++;
-    }
-    return i;
-}
-
-void cp_string(char * str, char *dst, int val){
-    
-    if(val){
-        for(int i=0; i< val;i++){
-            dst[i]=str[i];
-        }
-        dst[val]='\0';
-    }
-}
 
 int include_part(int * A){
 
@@ -33,18 +16,19 @@ int include_part(int * A){
 
 }
 
+int detected_overlap(int * A){
 
-int calculate_priority(int *p){
-    int tot_priority =0;
-    for(int i =1; i<53;i++){
-        if(p[i]){
-            tot_priority+=i;
-            printf("-- found cmm ! at cmm[%d] --",i);
-        }
+    if((A[0] >   A[3]) || (A[1] < A[2] )){
+        return 0;
+    }else {
+        printf("detected overlap !\n");
+        return 1;        
     }
-    printf("line priority = %d \n", tot_priority);
-    return tot_priority;
+
 }
+
+
+
 
 int main (){
     
@@ -65,17 +49,15 @@ int main (){
         
 
         my_eof = fgets(line_rd,line_nbr,fptr) != NULL;
+        
         if(my_eof <= 0){break;}
         printf("line_rd = %s ",line_rd);
         sscanf(line_rd,"%d-%d,%d-%d",&A[0],&A[1],&A[2],&A[3]);
-        for(int i =0; i<4;i++){printf("A[%d] = %d \n\n",i,A[i]);}
-        sum += include_part(A);
-
-    
+        for(int i =0; i<4;i++){printf("A[%d] = %d \n",i,A[i]);}
+        sum = sum + detected_overlap(A);
+        printf("sum = %d ",sum);
     }
 
-    printf("sum = %d ",sum);
-    
     fclose(fptr);
     return 0;
 
