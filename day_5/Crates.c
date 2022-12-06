@@ -28,13 +28,34 @@ void print_table(char A[100][100], int max_line, int col){
 }
 
 
+// void move_array_element(char A[100][100],int max_line, int col,int action[3]){
+
+//     for(int i = 0; i < action[0];i++){
+        
+//         A[action[2]-1][A[action[2]-1][0]+1] = A[action[1]-1][A[action[1]-1][0]];
+
+//         A[action[1]-1][A[action[1]-1][0]] = ' ';
+
+//         A[action[1]-1][0]--;
+
+//         A[action[2]-1][0]++;
+
+//     }
+
+//     print_table(A, max_col(A,col), col);
+// }
+
+
 void move_array_element(char A[100][100],int max_line, int col,int action[3]){
 
-    for(int i = 0; i < action[0];i++){
+    int temp = A[action[1]-1][0];
+    
+    for(int i = action[0] - 1; i >= 0 ;i--){
         
-        A[action[2]-1][A[action[2]-1][0]+1] = A[action[1]-1][A[action[1]-1][0]];
+        A[action[2]-1][A[action[2]-1][0]+1] = A[action[1]-1][temp-i];
+        printf("i =%d  -- value = %c from col = %d and lin %d \n", i, A[action[1]-1][A[action[1]-1][0]-i],action[1]-1, temp-i);
 
-        A[action[1]-1][A[action[1]-1][0]] = ' ';
+        A[action[1]-1][temp-i] = ' ';
 
         A[action[1]-1][0]--;
 
@@ -44,7 +65,6 @@ void move_array_element(char A[100][100],int max_line, int col,int action[3]){
 
     print_table(A, max_col(A,col), col);
 }
-
 
 
 int main (){
@@ -87,7 +107,7 @@ int main (){
     pos_heading = 288;
     int i =1;
     while(my_eof){
-        //if((pos_heading  - (i *(col * 4 + 1)) )<0) break;
+        if(( pos_heading - 36)<0) break;
         pos_heading = pos_heading - 36;
         fseek(fptr,pos_heading,SEEK_SET);
         
@@ -117,7 +137,7 @@ int main (){
         printf("the actions : %d %d %d \n",action[0],action[1],action[2] );
         move_array_element(A,max_line,col,action);
         
-
+//        break;
         if(my_eof <= 0){break;}
     }
 
