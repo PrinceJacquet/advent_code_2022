@@ -5,43 +5,59 @@
 #include <string.h>
 
 
-int include_part(int * A){
-
-    if(A[0] >= A[2] && A[1] <= A[3]){
-        return 1;
-    }else if(A[2] >= A[0] && A[3] <= A[1]){
-        return 1;
-    }else{
-        return 0;
+int max_col(char A[100][100], int col){
+    int max =0;
+    for(int i = 0; i < col; i++){
+        if (A[i][0] >= max) max = A[i][0]; 
     }
-
+    return max;
 }
 
-int detected_overlap(int * A){
-
-    if((A[0] >   A[3]) || (A[1] < A[2] )){
-        return 0;
-    }else {
-        printf("detected overlap !\n");
-        return 1;        
+void print_table(char A[100][100], int max_line, int col){
+    
+    for(int l = max_line ; l > 0; l--){
+        for(int c = 0; c < col; c++){
+            printf("[%c] ",A[c][l]);
+        }
+        printf("\n ");
     }
-
+    for(int c = 0; c < col; c++){
+            printf("[%d] ",A[c][0]);
+        }
+    printf("\n ");
 }
 
+
+void move_array_element(char A[100][100],int max_line, int col,int action[3]){
+
+    for(int i = 0; i < action[0];i++){
+        
+        A[action[2]-1][A[action[2]-1][0]+1] = A[action[1]-1][A[action[1]-1][0]];
+
+        A[action[1]-1][A[action[1]-1][0]] = ' ';
+
+        A[action[1]-1][0]--;
+
+        A[action[2]-1][0]++;
+
+    }
+
+    print_table(A, max_col(A,col), col);
+}
 
 
 
 int main (){
     
-    long int temp = 0, max_line =0, col= 0, my_eof = 1, pos_cursor = 0;
-    char line_rd[100] = {0}, **A;// , B[100];
-    int line_nbr = 50;
+    long int temp = 0, max_line =0, col= 0, my_eof = 1, pos_command = 0, pos_heading =0;
+    char line_rd[100] = {0}, A[100][100];// , B[100];
+    int line_nbr = 50, action[3];
 
     //A = (char) calloc(2,sizeof(char));
     
     FILE *fptr;
-    //fptr = fopen("C:\\Users\\Prince\\Seafile\\Projects\\advent_of_code\\day_5\\input.txt","r");
-    fptr = fopen("C:\\Users\\Prince\\Seafile\\Projects\\advent_of_code\\day_5\\test.txt","r");
+    fptr = fopen("C:\\Users\\Prince\\Seafile\\Projects\\advent_of_code\\day_5\\input.txt","r");
+    // fptr = fopen("C:\\Users\\Prince\\Seafile\\Projects\\advent_of_code\\day_5\\test.txt","r");
 
     if(fptr == NULL)
     {
@@ -49,10 +65,6 @@ int main (){
         return(1);             
     }
 
-    pos_cursor = ftell(fptr);
-
-    long int pos_heading =0;
-    printf("pos_cursor = %d \n",pos_cursor);
     while(my_eof){
         
         my_eof = fgets(line_rd,line_nbr,fptr) != NULL;
@@ -71,30 +83,44 @@ int main (){
     printf("max_line : %d \n",max_line);
     printf("col : %d \n",col);
 
-    A = (char **) calloc(col,sizeof(char *));
-    for(int i = 0; i < col; i++){
-        A[i] = (char *) calloc(max_line + 1,sizeof(char));
-    }
-       
-
-    
+    pos_command = pos_heading;
+    pos_heading -= col*4+1;
     int i =1;
     while(my_eof){
-        fseek(fptr,pos_heading - (col * 4 ) - (i *(col * 4 ) ),SEEK_SET);
+    //     if((pos_heading  - (i *(col * 4 + 1)) )<0) break;
+        pos_heading -= col*4+1;
+        fseek(fptr,pos_heading,SEEK_SET);
+        
         for(int c =0; c < col;c++){
-            my_eof = fgets(line_rd,4,fptr) != NULL;
+            my_eof = fgets(line_rd,5,fptr) != NULL;
             if(my_eof <= 0){break;}
-            printf("line_rd = %s ",line_rd);
-            sscanf(line_rd," [%c]",&A[c][i]);
+            printf("line_rd =%s\n ",line_rd);
+            sscanf(line_rd,"[%c",&A[c][i]);
             if(A[c][i] >0) A[c][0]++;
         }
 
         if(my_eof <= 0){break;}
-        printf("did i get a number : %d \n",temp);
         i++;
     }
+    print_table(A, max_line, col);
+    
+        
 
-    print_table(A);
+    fseek(fptr,54,SEEK_SET);
+    my_eof=1;
+    while(my_eof){
+
+        my_eof = fgets(line_rd,line_nbr,fptr) != NULL;
+        if(my_eof <= 0){break;}
+        printf("line_rd =%s --  test %c\n",line_rd, A[0][1]);
+        sscanf(line_rd,"move %d from %d to %d",&action[0],&action[1],&action[2]);
+        printf("the actions : %d %d %d \n",action[0],action[1],action[2] );
+        move_array_element(A,max_line,col,action);
+        
+
+        if(my_eof <= 0){break;}
+    }
+
 
     fclose(fptr);
     return 0;
