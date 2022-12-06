@@ -84,11 +84,11 @@ int main (){
     printf("col : %d \n",col);
 
     pos_command = pos_heading;
-    pos_heading -= col*4+1;
+    pos_heading = 288;
     int i =1;
     while(my_eof){
-    //     if((pos_heading  - (i *(col * 4 + 1)) )<0) break;
-        pos_heading -= col*4+1;
+        //if((pos_heading  - (i *(col * 4 + 1)) )<0) break;
+        pos_heading = pos_heading - 36;
         fseek(fptr,pos_heading,SEEK_SET);
         
         for(int c =0; c < col;c++){
@@ -106,7 +106,7 @@ int main (){
     
         
 
-    fseek(fptr,54,SEEK_SET);
+    fseek(fptr,325,SEEK_SET);
     my_eof=1;
     while(my_eof){
 
